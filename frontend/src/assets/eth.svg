@@ -1,0 +1,32 @@
+<svg
+  width="20"
+  height="20"
+  viewBox="0 0 20 20"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M9.99896 4L9.91846 4.27346V12.208L9.99896 12.2884L13.682 10.1113L9.99896 4Z"
+    fill="currentColor"
+  />
+  <path
+    d="M9.99908 4L6.31592 10.1113L9.99908 12.2884V8.43714V4Z"
+    fill="currentColor"
+  />
+  <path
+    d="M9.99899 12.9856L9.95361 13.0409V15.8674L9.99899 15.9998L13.6843 10.8096L9.99899 12.9856Z"
+    fill="currentColor"
+  />
+  <path
+    d="M9.99908 15.9998V12.9856L6.31592 10.8096L9.99908 15.9998Z"
+    fill="currentColor"
+  />
+  <path
+    d="M9.99902 12.2884L13.6821 10.1113L9.99902 8.43713V12.2884Z"
+    fill="currentColor"
+  />
+  <path
+    d="M6.31592 10.1113L9.99908 12.2884V8.43713L6.31592 10.1113Z"
+    fill="currentColor"
+  />
+</svg>

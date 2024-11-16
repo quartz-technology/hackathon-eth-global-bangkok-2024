@@ -1,25 +1,35 @@
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { edenFetch } from "@elysiajs/eden";
 import { sign } from "jsonwebtoken";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 
 import { validate, type User } from "@telegram-apps/init-data-node";
+import { createClient, erc20Abi, http } from "viem";
+import { readContract, getBalance } from "viem/actions";
+import { mainnet } from "viem/chains";
 
-const { TELEGRAM_BOT_TOKEN, APP_URL, NODE_ENV, JWT_KEY_ID } = Bun.env;
+const {
+	TELEGRAM_BOT_TOKEN,
+	APP_URL,
+	NODE_ENV,
+	JWT_KEY_ID,
+	ONEINCH_API_KEY,
+	ETH_RPC_URL,
+	PRIVATE_KEY,
+} = Bun.env;
 
-const privateKeyPath = path.resolve(__dirname, "../privateKey.pem");
+const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
-if (!fs.existsSync(privateKeyPath)) throw new Error("privateKey.pem not found");
+if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY not found");
 if (!TELEGRAM_BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is required");
 if (!APP_URL) throw new Error("APP_URL is required");
 if (!JWT_KEY_ID) throw new Error("JWT_KEY_ID is required");
+if (!ONEINCH_API_KEY) throw new Error("ONEINCH_API_KEY is required");
+if (!ETH_RPC_URL) throw new Error("ETH_RPC_URL is required");
 
-const privateKey = crypto.createPrivateKey(
-	fs.readFileSync(privateKeyPath, "utf8"),
-);
+const privateKey = crypto.createPrivateKey(PRIVATE_KEY);
 
 export type JwtPayload = {
 	telegram_id: string;
@@ -102,6 +112,35 @@ const app = new Elysia({
 			}
 		},
 		{ body: t.Object({ initDataRaw: t.String() }) },
+	)
+	.post(
+		"balance",
+		async (ctx) => {
+			// const req = await fetch(
+			// 	`https://api.1inch.dev/balance/v1.2/1/balances/${ctx.body.walletAddress}`,
+			// 	{
+			// 		headers: {
+			// 			Authorization: `Bearer ${ONEINCH_API_KEY}`,
+			// 		},
+			// 	},
+			// );
+			// const json = await req.json();
+
+			const client = createClient({
+				chain: mainnet,
+				transport: http(ETH_RPC_URL),
+			});
+
+			const balance = await readContract(client, {
+				abi: erc20Abi,
+				functionName: "balanceOf",
+				args: [ctx.body.walletAddress as `0x${string}`],
+				address: USDC_ADDRESS,
+			});
+
+			return { balance: balance.toString() };
+		},
+		{ body: t.Object({ walletAddress: t.String() }) },
 	)
 	.listen(3000);
 

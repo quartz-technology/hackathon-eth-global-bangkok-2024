@@ -1,0 +1,25 @@
+services:
+  web3-auth-backend:
+    container_name: web3-auth-backend
+    build:
+      context: ./web3-auth-backend
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      NODE_ENV: ${NODE_ENV}
+      APP_URL: ${APP_URL}
+      JWT_KEY_ID: ${JWT_KEY_ID}
+      ONEINCH_API_KEY: ${ONEINCH_API_KEY}
+      ETH_RPC_URL: ${ETH_RPC_URL}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    depends_on:
+      - web3-auth-backend
+    environment:
+      VITE_WEB3_AUTH_VERIFIER: ${VITE_WEB3_AUTH_VERIFIER}
+      VITE_WEB3_AUTH_CLIENTID: ${VITE_WEB3_AUTH_CLIENTID}
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_ETH_RPC_URL: ${VITE_ETH_RPC_URL}
