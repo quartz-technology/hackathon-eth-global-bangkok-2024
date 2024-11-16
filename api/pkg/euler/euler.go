@@ -18,10 +18,15 @@ import (
 
 var ray = new(big.Float).SetFloat64(math.Pow(10, 27))
 
+type VaultsMeta struct {
+	address common.Address
+	symbol  string
+}
+
 type EulerManager struct {
 	client *ethclient.Client
 
-	USDCVaults []common.Address
+	USDCVaults []VaultsMeta
 }
 
 var MAX_UINT256, _ = new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)
@@ -37,7 +42,7 @@ func NewEulerManager(ctx context.Context, client *ethclient.Client, vaultFactory
 		return nil, fmt.Errorf("failed to get vault list: %v", err)
 	}
 
-	USDCVaults := make([]common.Address, 0, len(vaultList))
+	USDCVaults := make([]VaultsMeta, 0, len(vaultList))
 	for _, addr := range vaultList {
 		evault, err := EVault.NewEVaultCaller(addr, client)
 		if err != nil {
@@ -50,8 +55,16 @@ func NewEulerManager(ctx context.Context, client *ethclient.Client, vaultFactory
 		}
 
 		if asset == USDC {
-			log.Infof("found USDC vault: %v", addr)
-			USDCVaults = append(USDCVaults, addr)
+			symbol, err := evault.Symbol(&bind.CallOpts{Context: ctx})
+			if err != nil {
+				return nil, fmt.Errorf("failed to get symbol: %v", err)
+			}
+
+			log.Infof("found USDC vault: %v - %v", addr, symbol)
+			USDCVaults = append(USDCVaults, VaultsMeta{
+				address: addr,
+				symbol:  symbol,
+			})
 		}
 	}
 
@@ -61,19 +74,21 @@ func NewEulerManager(ctx context.Context, client *ethclient.Client, vaultFactory
 	}, nil
 }
 
-func (m *EulerManager) GetEVaults() ([]common.Address, error) {
+func (m *EulerManager) GetEVaults() ([]VaultsMeta, error) {
 	return m.USDCVaults, nil
 }
 
 type EVaultsAPY struct {
 	Address common.Address `json:"address"`
 	APY     float64        `json:"apy"`
+	Symbol  string         `json:"symbol"`
+	Balance string         `json:"balance"`
 }
 
-func (m *EulerManager) GetEVaultsInfos(ctx context.Context, addrs []common.Address) ([]EVaultsAPY, error) {
-	res := make([]EVaultsAPY, 0, len(addrs))
-	for _, addr := range addrs {
-		evault, err := EVault.NewEVaultCaller(addr, m.client)
+func (m *EulerManager) GetEVaultsInfos(ctx context.Context, vaults []VaultsMeta, wallet common.Address) ([]EVaultsAPY, error) {
+	res := make([]EVaultsAPY, 0, len(vaults))
+	for _, vault := range vaults {
+		evault, err := EVault.NewEVaultCaller(vault.address, m.client)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create evault contract: %v", err)
 		}
@@ -101,9 +116,19 @@ func (m *EulerManager) GetEVaultsInfos(ctx context.Context, addrs []common.Addre
 
 		netAPY := APY * (1 - float64(fee)/10000)
 
+		log.Infof("wallet: %v", wallet, "vault: %v", vault.address, "apy: %v", netAPY)
+		balance, err := evault.BalanceOf(&bind.CallOpts{Context: ctx}, wallet)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get balance: %v", err)
+		}
+
+		fmt.Printf("balance: %v\n", balance)
+
 		res = append(res, EVaultsAPY{
-			Address: addr,
+			Address: vault.address,
 			APY:     netAPY,
+			Symbol:  vault.symbol,
+			Balance: balance.String(),
 		})
 	}
 
