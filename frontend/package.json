@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc --noEmit && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview --host 0.0.0.0"
 	},
 	"dependencies": {
 		"@elysiajs/eden": "^1.1.3",
