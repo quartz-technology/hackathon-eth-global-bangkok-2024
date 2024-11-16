@@ -13,7 +13,7 @@ import {
 } from "@telegram-apps/telegram-ui";
 import { formatNumber } from "../utils";
 import { useClient } from "../components/WalletProvider";
-import { erc20Abi, erc4626Abi, formatUnits } from "viem";
+import { erc20Abi, erc4626Abi, formatUnits, maxUint256 } from "viem";
 import { useAddress } from "../hooks/useAddress";
 import { useBalance } from "../hooks/useBalance";
 import { mainnet } from "viem/chains";
@@ -51,7 +51,7 @@ export const DepositPage: FC = () => {
 			account: address,
 			address: USDC_ADDRESS,
 			functionName: "approve",
-			args: [selectedMarket.address, balance],
+			args: [selectedMarket.address, maxUint256],
 			chain: mainnet,
 		});
 
