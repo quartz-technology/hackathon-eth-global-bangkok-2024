@@ -4,4 +4,7 @@ type Rebalance @entity(immutable: true) {
   to: Bytes!
   onBehalfOfAccount: Bytes!
   amount: BigInt!
+  transactionHash: Bytes!
+  blockTimestamp: BigInt!
+  blockNumber: BigInt!
 }
