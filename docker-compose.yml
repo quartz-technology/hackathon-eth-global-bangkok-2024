@@ -6,7 +6,7 @@ services:
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       NODE_ENV: ${NODE_ENV}
-      APP_URL: ${APP_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
       JWT_KEY_ID: ${JWT_KEY_ID}
       ETH_RPC_URL: ${ETH_RPC_URL}
       PRIVATE_KEY: ${PRIVATE_KEY}

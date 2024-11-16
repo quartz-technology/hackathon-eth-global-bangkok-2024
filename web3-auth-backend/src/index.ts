@@ -12,7 +12,7 @@ import { mainnet } from "viem/chains";
 
 const {
 	TELEGRAM_BOT_TOKEN,
-	APP_URL,
+	FRONTEND_URL,
 	NODE_ENV,
 	JWT_KEY_ID,
 	ETH_RPC_URL,
@@ -23,7 +23,7 @@ const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY not found");
 if (!TELEGRAM_BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is required");
-if (!APP_URL) throw new Error("APP_URL is required");
+if (!FRONTEND_URL) throw new Error("FRONTEND_URL is required");
 if (!JWT_KEY_ID) throw new Error("JWT_KEY_ID is required");
 if (!ETH_RPC_URL) throw new Error("ETH_RPC_URL is required");
 
@@ -80,7 +80,7 @@ const app = new Elysia({
 				"X-Requested-With",
 				"Accept",
 			],
-			origin: [APP_URL],
+			origin: [FRONTEND_URL],
 			credentials: true,
 			methods: ["GET", "POST", "OPTIONS"],
 		}),
