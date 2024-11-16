@@ -37,13 +37,13 @@ func main() {
 		log.Fatalf("failed to create Euler manager: %v", err)
 	}
 
-	api.Routes(r, em)
-
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 	}))
+
+	api.Routes(r, em)
 
 	r.Run(":8080")
 }
