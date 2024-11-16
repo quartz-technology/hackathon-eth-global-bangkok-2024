@@ -124,7 +124,7 @@ func Rebalance(ctx context.Context, em *euler.EulerManager, mut *sync.Mutex) {
 						log.Errorf("failed to rebalance: %v", err)
 					}
 
-					time.Sleep(500 * time.Second)
+					time.Sleep(15 * time.Second)
 				}
 
 			}
