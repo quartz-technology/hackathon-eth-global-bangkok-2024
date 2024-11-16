@@ -12,7 +12,6 @@ import (
 func Routes(r *gin.Engine, em *euler.EulerManager) {
 	r.GET("/markets", func(c *gin.Context) {
 		wallet := c.Query("wallet")
-		// log.Infof("wallet: %v", wallet)
 		if wallet == "" {
 			c.JSON(400, gin.H{"error": "wallet address is required"})
 			return

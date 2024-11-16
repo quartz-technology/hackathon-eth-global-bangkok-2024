@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/bindings/EVault"
 	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/bindings/GenericFactory"
@@ -86,50 +88,65 @@ type EVaultsAPY struct {
 }
 
 func (m *EulerManager) GetEVaultsInfos(ctx context.Context, vaults []VaultsMeta, wallet common.Address) ([]EVaultsAPY, error) {
-	res := make([]EVaultsAPY, 0, len(vaults))
-	for _, vault := range vaults {
-		evault, err := EVault.NewEVaultCaller(vault.address, m.client)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create evault contract: %v", err)
-		}
+	res := make([]EVaultsAPY, len(vaults))
 
-		rate, err := evault.InterestRate(&bind.CallOpts{Context: ctx})
-		if err != nil {
-			return nil, fmt.Errorf("failed to get interest rate: %v", err)
-		}
+	eg, egCtx := errgroup.WithContext(ctx)
+	mut := &sync.Mutex{}
 
-		supplyAPR := big.NewFloat(0).Mul(
-			big.NewFloat(0).Quo(
-				new(big.Float).SetInt(rate),
-				ray,
-			),
-			big.NewFloat(u.SECONDS_PER_YEAR),
-		)
-		fAPR, _ := supplyAPR.Float64()
+	for idx, vault := range vaults {
+		eg.Go(func() error {
+			evault, err := EVault.NewEVaultCaller(vault.address, m.client)
+			if err != nil {
+				return fmt.Errorf("failed to create evault contract: %v", err)
+			}
 
-		APY := u.ToAPY(fAPR)
+			rate, err := evault.InterestRate(&bind.CallOpts{Context: egCtx})
+			if err != nil {
+				return fmt.Errorf("failed to get interest rate: %v", err)
+			}
 
-		fee, err := evault.InterestFee(&bind.CallOpts{Context: ctx})
-		if err != nil {
-			return nil, fmt.Errorf("failed to get interest fee: %v", err)
-		}
+			supplyAPR := big.NewFloat(0).Mul(
+				big.NewFloat(0).Quo(
+					new(big.Float).SetInt(rate),
+					ray,
+				),
+				big.NewFloat(u.SECONDS_PER_YEAR),
+			)
+			fAPR, _ := supplyAPR.Float64()
 
-		netAPY := APY * (1 - float64(fee)/10000)
+			APY := u.ToAPY(fAPR)
 
-		log.Infof("wallet: %v", wallet, "vault: %v", vault.address, "apy: %v", netAPY)
-		balance, err := evault.BalanceOf(&bind.CallOpts{Context: ctx}, wallet)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get balance: %v", err)
-		}
+			fee, err := evault.InterestFee(&bind.CallOpts{Context: egCtx})
+			if err != nil {
+				return fmt.Errorf("failed to get interest fee: %v", err)
+			}
 
-		fmt.Printf("balance: %v\n", balance)
+			netAPY := APY * (1 - float64(fee)/10000)
 
-		res = append(res, EVaultsAPY{
-			Address: vault.address,
-			APY:     netAPY,
-			Symbol:  vault.symbol,
-			Balance: balance.String(),
+			balanceShare, err := evault.BalanceOf(&bind.CallOpts{Context: egCtx}, wallet)
+			if err != nil {
+				return fmt.Errorf("failed to get balance: %v", err)
+			}
+			balance, err := evault.ConvertToAssets(&bind.CallOpts{Context: egCtx}, balanceShare)
+			if err != nil {
+				return fmt.Errorf("failed to convert to assets: %v", err)
+			}
+
+			mut.Lock()
+			res[idx] = EVaultsAPY{
+				Address: vault.address,
+				APY:     netAPY,
+				Symbol:  vault.symbol,
+				Balance: balance.String(),
+			}
+			mut.Unlock()
+
+			return nil
 		})
+	}
+
+	if err := eg.Wait(); err != nil {
+		return nil, fmt.Errorf("failed to get evaults infos: %v", err)
 	}
 
 	return res, nil
