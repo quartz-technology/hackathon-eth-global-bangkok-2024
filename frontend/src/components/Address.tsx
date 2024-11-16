@@ -4,7 +4,7 @@ import EthIcon from "../assets/eth.svg?react";
 import CopyIcon from "../assets/copy.svg?react";
 
 export const Address = () => {
-	const { address = "", isLoading } = useAddress();
+	const { address = "0x0000...", isLoading } = useAddress();
 
 	return (
 		<div style={{ margin: "6px 18px" }}>
