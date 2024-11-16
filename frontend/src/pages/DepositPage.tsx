@@ -32,8 +32,6 @@ export const DepositPage: FC = () => {
 
 	const formattedBalance = formatNumber(formatUnits(balance ?? 0n, 6));
 
-	console.log(market);
-
 	const [txState, setTxState] = useState<
 		"initial" | "signature" | "mining" | "success" | "error"
 	>("initial");
@@ -158,6 +156,7 @@ export const DepositPage: FC = () => {
 			<div style={{ padding: "0px 18px" }}>
 				<Button
 					stretched
+					disabled={balance === 0n}
 					mode="filled"
 					size="l"
 					style={{ borderRadius: 16, backgroundColor: "#2990FF" }}

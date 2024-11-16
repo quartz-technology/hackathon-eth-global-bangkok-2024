@@ -14,6 +14,8 @@ import "openzeppelin/access/Ownable.sol";
 contract RebalancingOperator is Ownable {
     using SafeTransferLib for ERC20;
 
+    event Rebalance(address indexed from, address indexed to, address indexed onBehalfOfAccount, uint256 amount);
+
     IEVC public immutable evc;
     ERC20 public immutable asset;
 
@@ -42,5 +44,7 @@ contract RebalancingOperator is Ownable {
 
         ERC20(asset).approve(to, maxWithdraw);
         ERC4626(to).deposit(maxWithdraw, onBehalfOfAccount);
+
+        emit Rebalance(from, to, onBehalfOfAccount, maxWithdraw);
     }
 }

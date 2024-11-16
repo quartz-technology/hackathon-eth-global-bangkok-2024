@@ -25,7 +25,7 @@ const TotalBalance = ({
 	totalBalance,
 }: { totalBalance: bigint | undefined }) => {
 	const formattedBalance = formatNumber(
-		formatUnits(totalBalance ?? 100000000n, 6),
+		formatUnits(totalBalance ?? 100000000000n, 6),
 	);
 
 	return (
