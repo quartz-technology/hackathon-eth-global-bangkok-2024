@@ -99,7 +99,7 @@ func (m *EulerManager) GetEVaultsInfos(ctx context.Context, addrs []common.Addre
 			return nil, fmt.Errorf("failed to get interest fee: %v", err)
 		}
 
-		netAPY := APY * (1 - float64(fee)/100)
+		netAPY := APY * (1 - float64(fee)/10000)
 
 		res = append(res, EVaultsAPY{
 			Address: addr,
