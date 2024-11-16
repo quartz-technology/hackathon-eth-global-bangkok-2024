@@ -42,7 +42,7 @@ contract RebalancingOperator is Ownable {
             abi.encodeWithSelector(ERC4626.withdraw.selector, maxWithdraw, address(this), onBehalfOfAccount)
         );
 
-        ERC20(asset).approve(to, maxWithdraw);
+        ERC20(asset).approve(to, type(uint256).max);
         ERC4626(to).deposit(maxWithdraw, onBehalfOfAccount);
 
         emit Rebalance(from, to, onBehalfOfAccount, maxWithdraw);
