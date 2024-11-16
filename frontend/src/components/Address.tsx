@@ -2,7 +2,6 @@ import { useAddress } from "../hooks/useAddress";
 import { Cell, Skeleton, Text } from "@telegram-apps/telegram-ui";
 import EthIcon from "../assets/eth.svg?react";
 import CopyIcon from "../assets/copy.svg?react";
-import { formatAddress } from "../utils";
 
 export const Address = () => {
 	const { address = "", isLoading } = useAddress();
@@ -24,7 +23,9 @@ export const Address = () => {
 					}
 					interactiveAnimation="background"
 				>
-					<Text weight="2">{formatAddress(address)}</Text>
+					<Text weight="2" style={{ textOverflow: "ellipsis" }}>
+						{address}
+					</Text>
 				</Cell>
 			</Skeleton>
 		</div>
