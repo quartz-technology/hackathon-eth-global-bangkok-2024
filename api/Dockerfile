@@ -1,13 +1,14 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.19
+FROM golang:1.23.2
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY main.go ./
+COPY pkg ./pkg
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /euler-rebalancing-api
 

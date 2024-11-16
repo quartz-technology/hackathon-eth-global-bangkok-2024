@@ -15,10 +15,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
+	_ = godotenv.Load(".env")
 
 	ctx := context.Background()
 
