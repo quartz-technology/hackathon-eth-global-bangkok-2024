@@ -11,6 +11,8 @@ export const History = () => {
 	const { history } = useHistory(address);
 	const [showTxHistory, setShowTxHistory] = useState(false);
 
+	if (!history) return null;
+
 	return (
 		<Card
 			style={{

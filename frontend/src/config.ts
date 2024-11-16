@@ -10,7 +10,7 @@ if (!web3AuthClientId) throw new Error("WEB3_AUTH_CLIENTID is required");
 if (!web3AuthApiUrl) throw new Error("WEB3_AUTH_API_URL is required");
 if (!apiUrl) throw new Error("API_URL is required");
 if (!rpcUrl) throw new Error("ETH_RPC_URL is required");
-if (!subgraphApiUrl) throw new Error("SUBGRAPH_API_URL is required");
+// if (!subgraphApiUrl) throw new Error("SUBGRAPH_API_URL is required"); NOT REQUIRED
 
 export {
 	web3AuthVerifier,
