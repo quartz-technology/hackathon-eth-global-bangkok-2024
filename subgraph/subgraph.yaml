@@ -1,0 +1,24 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RebalancingOperator
+    network: holesky
+    source:
+      address: "0xf94ab55a20b32ac37c3a105f12db535986697945"
+      abi: RebalancingOperator
+      startBlock: 1167044
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Rebalance
+      abis:
+        - name: RebalancingOperator
+          file: ./abis/RebalancingOperator.abi.json
+      eventHandlers:
+        - event: Rebalance(indexed address,indexed address,indexed address,uint256)
+          handler: handleRebalance
+      file: ./src/RebalancingOperator.ts

@@ -1,0 +1,7 @@
+type Rebalance @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes!
+  to: Bytes!
+  onBehalfOfAccount: Bytes!
+  amount: BigInt!
+}
