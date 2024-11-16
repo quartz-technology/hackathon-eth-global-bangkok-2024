@@ -15,9 +15,9 @@ import { Page } from "../components/Page";
 import { Address } from "../components/Address";
 import { formatNumber } from "../utils";
 import { useAddress } from "../hooks/useAddress";
-import { useOperator } from "../hooks/useOperator";
 import { useBalance } from "../hooks/useBalance";
 import { useMarkets } from "../hooks/useMarkets";
+import { History } from "../components/History";
 import { formatUnits } from "viem";
 import { Link } from "react-router-dom";
 
@@ -92,8 +92,6 @@ export const IndexPage: FC = () => {
 	const { address } = useAddress();
 	const { markets } = useMarkets(address);
 
-	const { isAuthorized } = useOperator(address);
-
 	const totalBalance = useMemo(() => {
 		return markets?.reduce((acc, market) => {
 			return acc + BigInt(market.balance);
@@ -162,6 +160,8 @@ export const IndexPage: FC = () => {
 					</Cell>
 				</Link>
 			</List>
+
+			<History />
 		</Page>
 	);
 };

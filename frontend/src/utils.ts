@@ -2,8 +2,9 @@ export const formatAddress = (address: string) => {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-export const formatNumber = (number: string | number) => {
+export const formatNumber = (number: string | number, compact = false) => {
 	return new Intl.NumberFormat("en-US", {
+		notation: compact ? "compact" : "standard",
 		maximumFractionDigits: 2,
 		minimumFractionDigits: 0,
 	}).format(number as number);

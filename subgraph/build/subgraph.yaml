@@ -1,6 +1,6 @@
 specVersion: 0.0.5
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
     name: RebalancingOperator
@@ -17,8 +17,8 @@ dataSources:
         - Rebalance
       abis:
         - name: RebalancingOperator
-          file: ./abis/RebalancingOperator.abi.json
+          file: RebalancingOperator/abis/RebalancingOperator.abi.json
       eventHandlers:
         - event: Rebalance(indexed address,indexed address,indexed address,uint256)
           handler: handleRebalance
-      file: ./src/RebalancingOperator.ts
+      file: RebalancingOperator/RebalancingOperator.wasm
