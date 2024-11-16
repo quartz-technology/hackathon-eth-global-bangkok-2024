@@ -20,8 +20,6 @@ const {
 	PRIVATE_KEY,
 } = Bun.env;
 
-console.log(PRIVATE_KEY);
-
 const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY not found");
