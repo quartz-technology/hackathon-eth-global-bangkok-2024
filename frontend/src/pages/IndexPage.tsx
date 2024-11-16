@@ -131,38 +131,36 @@ export const IndexPage: FC = () => {
 					</Cell>
 				</Link>
 
-				{!isAuthorized && (
-					<Link
-						to="/magic-rebalance"
+				<Link
+					to="/magic-rebalance"
+					style={{
+						textDecoration: "none",
+						display: "block",
+						color: "var(--tg-theme-text-primary)",
+					}}
+				>
+					<Cell
 						style={{
-							textDecoration: "none",
-							display: "block",
-							color: "var(--tg-theme-text-primary)",
+							backgroundColor: "var(--tg-theme-bg-color)",
+							borderRadius: 16,
 						}}
+						interactiveAnimation="background"
+						before={
+							<MagicIcon
+								width={26}
+								height={26}
+								style={{
+									borderRadius: 8,
+									background: "#2990FF",
+									padding: 6,
+								}}
+							/>
+						}
+						subtitle="Automatically maximize your APY"
 					>
-						<Cell
-							style={{
-								backgroundColor: "var(--tg-theme-bg-color)",
-								borderRadius: 16,
-							}}
-							interactiveAnimation="background"
-							before={
-								<MagicIcon
-									width={26}
-									height={26}
-									style={{
-										borderRadius: 8,
-										background: "#2990FF",
-										padding: 6,
-									}}
-								/>
-							}
-							subtitle="Automatically maximize your APY"
-						>
-							<Text weight="2">Enable Magic Euler</Text>
-						</Cell>
-					</Link>
-				)}
+						<Text weight="2">Enable Magic Euler</Text>
+					</Cell>
+				</Link>
 			</List>
 		</Page>
 	);

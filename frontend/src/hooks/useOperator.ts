@@ -6,8 +6,11 @@ import { EVC_ADDRESS, OPERATOR_ADDRESS } from "../utils";
 
 export const useOperator = (walletAddress: `0x${string}` | undefined) => {
 	const { client } = useClient();
-
-	const { data: isAuthorized, isLoading } = useQuery({
+	const {
+		data: isAuthorized,
+		isLoading,
+		refetch,
+	} = useQuery({
 		queryKey: ["getOperator", walletAddress, client],
 		queryFn:
 			walletAddress && client
@@ -26,5 +29,5 @@ export const useOperator = (walletAddress: `0x${string}` | undefined) => {
 				: skipToken,
 	});
 
-	return { isAuthorized, isLoading };
+	return { isAuthorized, isLoading, refetch };
 };

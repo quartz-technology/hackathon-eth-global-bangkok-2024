@@ -18,19 +18,26 @@ import { useBalance } from "../hooks/useBalance";
 import { mainnet } from "viem/chains";
 import { getTransactionReceipt } from "viem/actions";
 import { EVC_ADDRESS, OPERATOR_ADDRESS } from "../utils";
+import { apiUrl } from "../config";
 
 export const MagicRebalance: FC = () => {
 	const { client } = useClient();
 	const { address } = useAddress();
 	const { balance } = useBalance(address);
-	const { isAuthorized } = useOperator(address);
+	const { isAuthorized, refetch } = useOperator(address);
 
 	const [txState, setTxState] = useState<
 		"initial" | "signature" | "mining" | "success" | "error"
 	>("initial");
 
 	const onMagicRebalance = async () => {
-		if (!client || !address || !balance) return;
+		if (
+			!client ||
+			!address ||
+			balance === undefined ||
+			isAuthorized === undefined
+		)
+			return;
 
 		setTxState("signature");
 
@@ -41,7 +48,7 @@ export const MagicRebalance: FC = () => {
 			account: address,
 			address: EVC_ADDRESS,
 			functionName: "setAccountOperator",
-			args: [address, OPERATOR_ADDRESS, true],
+			args: [address, OPERATOR_ADDRESS, !isAuthorized],
 			chain: mainnet,
 		});
 
@@ -56,6 +63,12 @@ export const MagicRebalance: FC = () => {
 		} else {
 			setTxState("error");
 		}
+
+		await fetch(`${apiUrl}/rebalancing?wallet${address}&run=${!isAuthorized}`);
+
+		await refetch();
+
+		setTimeout(() => setTxState("initial"), 2500);
 	};
 
 	return (
@@ -135,12 +148,17 @@ export const MagicRebalance: FC = () => {
 				<Button
 					mode="filled"
 					stretched
-					disabled={isAuthorized === undefined || isAuthorized}
 					size="l"
-					style={{ borderRadius: 16, backgroundColor: "#2990FF" }}
+					disabled={isAuthorized === undefined}
+					style={{
+						borderRadius: 16,
+						backgroundColor: isAuthorized
+							? "var(--tgui--destructive_text_color)"
+							: "#2990FF",
+					}}
 					onClick={() => onMagicRebalance()}
 				>
-					{isAuthorized ? "Already enabled" : "Enable"}
+					{isAuthorized ? "Disable" : "Enable"}
 				</Button>
 			</div>
 		</Page>
