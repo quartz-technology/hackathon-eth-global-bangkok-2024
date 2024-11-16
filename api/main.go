@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -43,7 +44,10 @@ func main() {
 		AllowHeaders:     []string{"*"},
 	}))
 
-	api.Routes(r, em)
+	mut := &sync.Mutex{}
+
+	api.Routes(r, em, mut)
+	go api.Rebalance(ctx, em, mut)
 
 	r.Run(":8080")
 }

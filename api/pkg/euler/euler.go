@@ -2,19 +2,23 @@ package euler
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"fmt"
 	"math"
 	"math/big"
+	"os"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/bindings/EVault"
 	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/bindings/GenericFactory"
+	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/bindings/RebalancingOperator"
 	"github.com/quartz-technology/hackathon-eth-global-bangkok-2024/pkg/u"
 )
 
@@ -26,7 +30,9 @@ type VaultsMeta struct {
 }
 
 type EulerManager struct {
-	client *ethclient.Client
+	client    *ethclient.Client
+	rbOp      *RebalancingOperator.RebalancingOperatorTransactor
+	rbOpAdmin *ecdsa.PrivateKey
 
 	USDCVaults []VaultsMeta
 }
@@ -70,14 +76,23 @@ func NewEulerManager(ctx context.Context, client *ethclient.Client, vaultFactory
 		}
 	}
 
+	operatorAddr := os.Getenv("REBALANCING_OPERATOR_ADDRESS")
+	rbOp, err := RebalancingOperator.NewRebalancingOperatorTransactor(common.HexToAddress(operatorAddr), client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create rebalancing operator contract: %v", err)
+	}
+
+	rbOpAdmin, err := crypto.HexToECDSA(os.Getenv("REBALANCING_OPERATOR_PK"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get private key: %v", err)
+	}
+
 	return &EulerManager{
 		client:     client,
 		USDCVaults: USDCVaults,
+		rbOp:       rbOp,
+		rbOpAdmin:  rbOpAdmin,
 	}, nil
-}
-
-func (m *EulerManager) GetEVaults() ([]VaultsMeta, error) {
-	return m.USDCVaults, nil
 }
 
 type EVaultsAPY struct {
@@ -150,4 +165,30 @@ func (m *EulerManager) GetEVaultsInfos(ctx context.Context, vaults []VaultsMeta,
 	}
 
 	return res, nil
+}
+
+func (em *EulerManager) Rebalance(ctx context.Context, wallet, from, to common.Address) error {
+	chainID, err := em.client.ChainID(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get chain id: %v", err)
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(em.rbOpAdmin, chainID)
+	if err != nil {
+		return fmt.Errorf("failed to create transactor: %v", err)
+	}
+
+	log.Infof("transacting rebalance: %v %v %v", wallet, from, to)
+	tx, err := em.rbOp.RebalanceOnBehalf(&bind.TransactOpts{
+		Context: ctx,
+		Signer: auth.Signer,
+		From: auth.From,
+	}, from, to, wallet)
+	if err != nil {
+		return fmt.Errorf("failed to rebalance: %v", err)
+	}
+
+	log.Infof("rebalanced: %v", tx.Hash().Hex())
+
+	return nil
 }
