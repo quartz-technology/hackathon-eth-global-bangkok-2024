@@ -18,12 +18,12 @@ services:
     container_name: frontend
     build:
       context: ./frontend
+      args:
+        VITE_WEB3_AUTH_VERIFIER: ${VITE_WEB3_AUTH_VERIFIER}
+        VITE_WEB3_AUTH_CLIENTID: ${VITE_WEB3_AUTH_CLIENTID}
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_ETH_RPC_URL: ${VITE_ETH_RPC_URL}
     depends_on:
       - web3-auth-backend
-    environment:
-      VITE_WEB3_AUTH_VERIFIER: ${VITE_WEB3_AUTH_VERIFIER}
-      VITE_WEB3_AUTH_CLIENTID: ${VITE_WEB3_AUTH_CLIENTID}
-      VITE_API_URL: ${VITE_API_URL}
-      VITE_ETH_RPC_URL: ${VITE_ETH_RPC_URL}
     ports:
       - "4173:4173"
