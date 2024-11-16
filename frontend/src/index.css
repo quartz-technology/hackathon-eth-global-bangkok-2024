@@ -8,3 +8,10 @@ body {
 .rounded-skeleton::after {
   border-radius: 16px;
 }
+
+.hidden-scrollbar::-webkit-scrollbar,
+.hidden-scrollbar::-webkit-scrollbar-button,
+.hidden-scrollbar::-webkit-scrollbar-thumb,
+.hidden-scrollbar::-webkit-scrollbar-track {
+  display: none;
+}

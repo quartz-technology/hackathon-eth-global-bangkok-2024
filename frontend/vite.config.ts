@@ -12,7 +12,7 @@ export default defineConfig({
 		react(),
 		// Create a custom SSL certificate valid for the local machine.
 		// https://www.npmjs.com/package/vite-plugin-mkcert
-		process.env.NODE_ENV === "developpment" ? mkcert() : undefined,
+		process.env.NODE_ENV === "development" ? mkcert() : undefined,
 		nodePolyfills(),
 		svgr(),
 	],
