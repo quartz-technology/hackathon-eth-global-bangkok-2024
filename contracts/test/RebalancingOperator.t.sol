@@ -35,28 +35,54 @@ contract RebalancingMainnetTest is Test {
         IEVC evc = IEVC(EVC);
 
         // deploy RebalancingOperator
-        RebalancingOperator rebalancingOperator = new RebalancingOperator(admin, evc, ERC20(USDC));
+        RebalancingOperator rebalancingOperator = new RebalancingOperator(
+            admin,
+            evc,
+            ERC20(USDC)
+        );
 
         vm.prank(USDC_WHALE);
         ERC20(USDC).transfer(testUser, 1000e6);
 
         vm.startPrank(testUser);
-        IEVC(evc).setAccountOperator(testUser, address(rebalancingOperator), true);
-        ERC20(USDC).approve(address(rebalancingOperator), type(uint256).max);
+        IEVC(evc).setAccountOperator(
+            testUser,
+            address(rebalancingOperator),
+            true
+        );
 
-        console.log("RebalancingOperator deployed at: ", address(rebalancingOperator));
+        console.log(
+            "RebalancingOperator deployed at: ",
+            address(rebalancingOperator)
+        );
 
         ERC20(USDC).approve(USDC_VAULT_1, 100e6);
         ERC4626(USDC_VAULT_1).deposit(100e6, testUser);
 
-        vm.assertApproxEqAbs(ERC4626(USDC_VAULT_1).convertToAssets(ERC20(USDC_VAULT_1).balanceOf(testUser)), 100e6, 10);
+        vm.assertApproxEqAbs(
+            ERC4626(USDC_VAULT_1).convertToAssets(
+                ERC20(USDC_VAULT_1).balanceOf(testUser)
+            ),
+            100e6,
+            10
+        );
 
         // rebalance
         vm.stopPrank();
         vm.prank(admin);
-        rebalancingOperator.rebalanceOnBehalf(USDC_VAULT_1, USDC_VAULT_2, testUser);
+        rebalancingOperator.rebalanceOnBehalf(
+            USDC_VAULT_1,
+            USDC_VAULT_2,
+            testUser
+        );
 
-        vm.assertApproxEqAbs(ERC4626(USDC_VAULT_2).convertToAssets(ERC20(USDC_VAULT_2).balanceOf(testUser)), 100e6, 10);
+        vm.assertApproxEqAbs(
+            ERC4626(USDC_VAULT_2).convertToAssets(
+                ERC20(USDC_VAULT_2).balanceOf(testUser)
+            ),
+            100e6,
+            10
+        );
         vm.assertEq(ERC20(USDC_VAULT_1).balanceOf(testUser), 0);
     }
 }
