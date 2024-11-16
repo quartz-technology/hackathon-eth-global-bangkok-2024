@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import svgr from 'vite-plugin-svgr';
+import svgr from "vite-plugin-svgr";
 import mkcert from "vite-plugin-mkcert";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
@@ -13,14 +13,16 @@ export default defineConfig({
 		react(),
 		// Create a custom SSL certificate valid for the local machine.
 		// https://www.npmjs.com/package/vite-plugin-mkcert
-		mkcert(),
+		process.env.NODE_ENV === "developpment" ? mkcert() : undefined,
 		nodePolyfills(),
-    svgr(),
+		svgr(),
 	],
 	publicDir: "./public",
 	server: {
-		// Exposes your dev server and makes it accessible for the devices in the same network.
 		host: true,
+	},
+	preview: {
+		host: "0.0.0.0",
 	},
 	define: {
 		"process.env": {},
