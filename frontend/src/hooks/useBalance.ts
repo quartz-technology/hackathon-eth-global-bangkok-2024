@@ -1,7 +1,7 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { edenFetch } from "@elysiajs/eden";
 import type { Server } from "../server";
-import { apiUrl } from "../config";
+import { web3AuthApiUrl } from "../config";
 
 export const useBalance = (walletAddress: `0x${string}` | undefined) => {
 	const {
@@ -12,7 +12,7 @@ export const useBalance = (walletAddress: `0x${string}` | undefined) => {
 		queryKey: ["getBalance", walletAddress],
 		queryFn: walletAddress
 			? async () => {
-					const fetch = edenFetch<Server>(apiUrl);
+					const fetch = edenFetch<Server>(web3AuthApiUrl);
 
 					const data = await fetch("/balance", {
 						method: "POST",

@@ -10,7 +10,12 @@ import {
 import { createClient, custom, walletActions, type WalletClient } from "viem";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
-import { apiUrl, clientId, rpcUrl, verifier } from "../config";
+import {
+	web3AuthApiUrl,
+	web3AuthClientId,
+	rpcUrl,
+	web3AuthVerifier,
+} from "../config";
 import { edenFetch } from "@elysiajs/eden";
 import type { JwtPayload, Server } from "../server";
 
@@ -42,7 +47,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
 				});
 
 				const web3authInstance = new Web3Auth({
-					clientId: clientId,
+					clientId: web3AuthClientId,
 					web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
 					usePnPKey: false,
 					privateKeyProvider,
@@ -58,7 +63,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
 					await web3authInstance.logout();
 				}
 
-				const fetch = edenFetch<Server>(apiUrl);
+				const fetch = edenFetch<Server>(web3AuthApiUrl);
 
 				if (!initDataRaw) {
 					console.error("No initDataRaw received.");
@@ -82,7 +87,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
 				const { payload } = decodeToken<JwtPayload>(token);
 
 				const provider = await web3authInstance.connect({
-					verifier: verifier,
+					verifier: web3AuthVerifier,
 					verifierId: payload.sub,
 					idToken: token,
 				});
