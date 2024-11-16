@@ -15,7 +15,6 @@ const {
 	APP_URL,
 	NODE_ENV,
 	JWT_KEY_ID,
-	ONEINCH_API_KEY,
 	ETH_RPC_URL,
 	PRIVATE_KEY,
 } = Bun.env;
@@ -26,7 +25,6 @@ if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY not found");
 if (!TELEGRAM_BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is required");
 if (!APP_URL) throw new Error("APP_URL is required");
 if (!JWT_KEY_ID) throw new Error("JWT_KEY_ID is required");
-if (!ONEINCH_API_KEY) throw new Error("ONEINCH_API_KEY is required");
 if (!ETH_RPC_URL) throw new Error("ETH_RPC_URL is required");
 
 const privateKey = crypto.createPrivateKey(PRIVATE_KEY);
@@ -116,16 +114,6 @@ const app = new Elysia({
 	.post(
 		"balance",
 		async (ctx) => {
-			// const req = await fetch(
-			// 	`https://api.1inch.dev/balance/v1.2/1/balances/${ctx.body.walletAddress}`,
-			// 	{
-			// 		headers: {
-			// 			Authorization: `Bearer ${ONEINCH_API_KEY}`,
-			// 		},
-			// 	},
-			// );
-			// const json = await req.json();
-
 			const client = createClient({
 				chain: mainnet,
 				transport: http(ETH_RPC_URL),

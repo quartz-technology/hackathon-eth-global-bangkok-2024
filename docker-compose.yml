@@ -8,7 +8,6 @@ services:
       NODE_ENV: ${NODE_ENV}
       APP_URL: ${APP_URL}
       JWT_KEY_ID: ${JWT_KEY_ID}
-      ONEINCH_API_KEY: ${ONEINCH_API_KEY}
       ETH_RPC_URL: ${ETH_RPC_URL}
       PRIVATE_KEY: ${PRIVATE_KEY}
     ports:
