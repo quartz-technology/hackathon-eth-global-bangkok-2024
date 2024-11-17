@@ -14,6 +14,11 @@ Try it out now at [t.me/poukave_bot](https://t.me/poukave_bot/rebalencer)!
   <img alt="image" width="360px" src="https://github.com/user-attachments/assets/7f2bda62-787e-44aa-977e-da1136b66d41">
 </div>
 
+<div style="display: flex; justify-content: start; width: 100%">
+  <img alt="image" width="360px" src="https://github.com/user-attachments/assets/95c4bea2-ef89-46c8-b8dc-031b6d77f706">
+  <img alt="image" width="360px" src="https://github.com/user-attachments/assets/c9289624-eda1-49f5-96af-97d6a91efafe">
+</div>
+
 ## Features
 
 - **Automated Rebalancing**: Automatically rebalance your Euler vault positions based on your preferred allocation.
