@@ -13,7 +13,7 @@ import EulerIcon from "../assets/euler.svg?react";
 
 import { Page } from "../components/Page";
 import { Address } from "../components/Address";
-import { formatNumber } from "../utils";
+import { formatAddress, formatNumber } from "../utils";
 import { useAddress } from "../hooks/useAddress";
 import { useBalance } from "../hooks/useBalance";
 import { useMarkets } from "../hooks/useMarkets";
@@ -98,6 +98,10 @@ export const IndexPage: FC = () => {
 		}, 0n);
 	}, [markets]);
 
+	const currentMarket = useMemo(() => {
+		return markets?.find((m) => BigInt(m.balance) > 0n);
+	}, [markets]);
+
 	return (
 		<Page back={false}>
 			<Address />
@@ -105,6 +109,23 @@ export const IndexPage: FC = () => {
 			<TotalBalance totalBalance={totalBalance} />
 
 			<List>
+				{currentMarket && (
+					<Cell
+						style={{
+							textDecoration: "none",
+							backgroundColor: "var(--tg-theme-bg-color)",
+							borderRadius: 16,
+						}}
+						after={
+							<Text weight="3">
+								{formatNumber((currentMarket.apy ?? 0) * 100)}%
+							</Text>
+						}
+					>
+						<Text>Market: {formatAddress(currentMarket.address)}</Text>
+					</Cell>
+				)}
+
 				<AvailableBalance />
 
 				<Link
