@@ -24,6 +24,8 @@ Try it out now at [t.me/poukave_bot](https://t.me/poukave_bot/rebalencer)!
 - **Automated Rebalancing**: Automatically rebalance your Euler vault positions based on your preferred allocation.
 - **Zero Configuration Onboarding**: Simply login via Telegram and deposit your USDCs.
 - **Use it on any device**: Poukave is a Telegram mini-app so it benefits from the Telegram ecosystem and can be used on any device, desktop and/or mobile.
+- **Portfolio**: track your portfolio performance and your vault positions.
+
 
 ## How it works
 
