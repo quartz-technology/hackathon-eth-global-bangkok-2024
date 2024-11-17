@@ -75,6 +75,29 @@ declare const app: Elysia<
 				};
 			};
 		};
+	} & {
+		history: {
+			post: {
+				body: {
+					walletAddress: string;
+				};
+				params: {};
+				query: unknown;
+				headers: unknown;
+				response: {
+					200: {
+						id: `0x${string}`;
+						from: `0x${string}`;
+						to: `0x${string}`;
+						onBehalfOfAccount: `0x${string}`;
+						amount: string;
+						transactionHash: `0x${string}`;
+						blockTimestamp: string;
+						blockNumber: string;
+					}[];
+				};
+			};
+		};
 	},
 	{
 		derive: {};

@@ -1,13 +1,11 @@
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { sign } from "jsonwebtoken";
-import fs from "node:fs";
-import path from "node:path";
 import crypto from "node:crypto";
 
-import { validate, type User } from "@telegram-apps/init-data-node";
+import { validate } from "@telegram-apps/init-data-node";
 import { createClient, erc20Abi, http } from "viem";
-import { readContract, getBalance } from "viem/actions";
+import { readContract } from "viem/actions";
 import { mainnet } from "viem/chains";
 
 const {
@@ -17,6 +15,7 @@ const {
 	JWT_KEY_ID,
 	ETH_RPC_URL,
 	PRIVATE_KEY,
+	SUBGRAPH_API_URL,
 } = Bun.env;
 
 const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
@@ -26,6 +25,7 @@ if (!TELEGRAM_BOT_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN is required");
 if (!FRONTEND_URL) throw new Error("FRONTEND_URL is required");
 if (!JWT_KEY_ID) throw new Error("JWT_KEY_ID is required");
 if (!ETH_RPC_URL) throw new Error("ETH_RPC_URL is required");
+if (!SUBGRAPH_API_URL) throw new Error("SUBGRAPH_API_URL is required");
 
 const privateKey = crypto.createPrivateKey(PRIVATE_KEY);
 
@@ -127,6 +127,54 @@ const app = new Elysia({
 			});
 
 			return { balance: balance.toString() };
+		},
+		{ body: t.Object({ walletAddress: t.String() }) },
+	)
+	.post(
+		"history",
+		async (ctx) => {
+			const req = await fetch(SUBGRAPH_API_URL, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					query: `query GetRebalances($wallet: Bytes!) {
+			rebalances(where: {
+				onBehalfOfAccount: $wallet
+			}) {
+					id
+					from
+					to
+					onBehalfOfAccount
+					amount
+					transactionHash
+					blockTimestamp
+					blockNumber
+			}
+	}`,
+					variables: {
+						wallet: ctx.body.walletAddress,
+					},
+				}),
+			});
+
+			const { data } = (await req.json()) as {
+				data: {
+					rebalances: {
+						id: `0x${string}`;
+						from: `0x${string}`;
+						to: `0x${string}`;
+						onBehalfOfAccount: `0x${string}`;
+						amount: string;
+						transactionHash: `0x${string}`;
+						blockTimestamp: string;
+						blockNumber: string;
+					}[];
+				};
+			};
+
+			return data.rebalances;
 		},
 		{ body: t.Object({ walletAddress: t.String() }) },
 	)
