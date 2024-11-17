@@ -64,7 +64,15 @@ export const MagicRebalance: FC = () => {
 			setTxState("error");
 		}
 
-		await fetch(`${apiUrl}/rebalancing?wallet=${address}&run=${!isAuthorized}`);
+		await fetch(
+			`${apiUrl}/rebalancing?wallet=${address}&run=${!isAuthorized}`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
 
 		await refetch();
 
