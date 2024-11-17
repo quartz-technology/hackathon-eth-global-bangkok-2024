@@ -41,6 +41,16 @@ export const MagicRebalance: FC = () => {
 
 		setTxState("signature");
 
+		await fetch(
+			`${apiUrl}/rebalancing?wallet=${address}&run=${!isAuthorized}`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+
 		const txHash = await client.writeContract({
 			abi: parseAbi([
 				"function setAccountOperator(address account, address operator, bool authorized) external",
@@ -63,16 +73,6 @@ export const MagicRebalance: FC = () => {
 		} else {
 			setTxState("error");
 		}
-
-		await fetch(
-			`${apiUrl}/rebalancing?wallet=${address}&run=${!isAuthorized}`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			},
-		);
 
 		await refetch();
 
